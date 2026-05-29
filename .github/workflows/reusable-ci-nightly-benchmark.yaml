@@ -15,23 +15,6 @@ on:
         default: 'standalone'
       cluster_provider:
         description: 'Cluster provider targeted ("ocp","gke","cks")'
-        requirname: CI - Generic Nightly Run Benchmark
-
-on:
-  workflow_call:
-    inputs:
-      scenario_dir:
-        description: 'Directory housing the scenarios'
-        required: false
-        type: 'string'
-        default: 'cicd'
-      standup_method:
-        description: 'Standup method to be used ("standalone","fma","modelservice","kustomize")'
-        required: false
-        type: 'string'
-        default: 'standalone'
-      cluster_provider:
-        description: 'Cluster provider targeted ("ocp","gke","cks")'
         required: false
         type: 'string'
         default: 'kind'
