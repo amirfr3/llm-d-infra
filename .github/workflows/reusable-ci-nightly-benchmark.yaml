@@ -272,13 +272,13 @@ jobs:
 
       - name: Install llmdbenchmark
         run: |
-          cd /
+          cd ~
           if [[ ! -f install.sh ]]; then
             curl -sSL https://raw.githubusercontent.com/llm-d/llm-d-benchmark/main/install.sh -o install.sh
             chmod +x install.sh
           fi
           ./install.sh -y 2>&1
-
+          ls -la ~
           if [[ ! -f util/debug_info_on_failure.sh ]]; then
             curl -sSL https://raw.githubusercontent.com/llm-d/llm-d-benchmark/refs/heads/main/util/debug_info_on_failure.sh -o /tmp/debug_info_on_failure.sh
             chmod +x /tmp/debug_info_on_failure.sh
@@ -308,8 +308,8 @@ jobs:
 
       - name: Cleanup target cloud
         run: |
-          if [[ -d /llm-d-benchmark ]]; then
-            cd /llm-d-benchmark
+          if [[ -d ~/llm-d-benchmark ]]; then
+            cd ~/llm-d-benchmark
           fi
           echo "### Cluster names: $(cat ~/.kube/config | yq ".clusters[].name" | sed ':a;N;$!ba;s/\n/, /g')"
           LLMDBENCH_CMD="llmdbenchmark --spec $LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO $LLMDBENCH_EXTRA_CMD teardown --namespace $LLMDBENCH_CICD_NS --release $LLMDBENCH_CICD_R --methods $LLMDBENCH_CICD_METHOD"
@@ -336,8 +336,8 @@ jobs:
 
       - name: Run
         run: |
-          if [[ -d /llm-d-benchmark ]]; then
-            cd /llm-d-benchmark
+          if [[ -d ~/llm-d-benchmark ]]; then
+            cd ~/llm-d-benchmark
           fi
           if [[ "$LLMDBENCH_CICD_TARGET" == "kind" && "${{ inputs.standup_method }}" == "fma" ]]; then
             echo "Temporarily unable to test \"fma\" on \"kind\" clusters"
@@ -356,8 +356,8 @@ jobs:
       - name: Teardown
         if: always()
         run: |
-          if [[ -d /llm-d-benchmark ]]; then
-            cd /llm-d-benchmark
+          if [[ -d ~/llm-d-benchmark ]]; then
+            cd ~/llm-d-benchmark
           fi
           LLMDBENCH_CMD="llmdbenchmark --spec $LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO $LLMDBENCH_EXTRA_CMD teardown --namespace $LLMDBENCH_CICD_NS --gateway-class $LLMDBENCH_GATEWAY_CLASS --release $LLMDBENCH_CICD_R --methods $LLMDBENCH_CICD_METHOD"
           echo "### $LLMDBENCH_CMD ###"
