@@ -313,10 +313,11 @@ jobs:
         run: |
           #find ~ -type f -name "br_v0_2_json_schema.json" -print
           cd ~
-          if [[ -d ~/work/llm-d-benchmark ]];
+          if [[ ! -d ~/work/llm-d-benchmark ]];
           then
-            cd ~/work/llm-d-benchmark
+            mkdir -p ~/work/llm-d-benchmark
           fi
+          cd ~/work/llm-d-benchmark
           if [[ ! -f install.sh ]]; then
             curl -sSL https://raw.githubusercontent.com/llm-d/llm-d-benchmark/main/install.sh -o install.sh
             chmod +x install.sh
@@ -329,6 +330,7 @@ jobs:
           else
             sudo cp util/debug_info_on_failure.sh /usr/local/bin
           fi
+          ln -s ~/work/llm-d-benchmark ~/llm-d-benchmark
           cd ~/llm-d-benchmark
           echo "### llm-d-benchmark code is present (branch $(git branch --show-current))"
         shell: bash
