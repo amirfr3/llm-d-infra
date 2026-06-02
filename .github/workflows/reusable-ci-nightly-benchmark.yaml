@@ -389,8 +389,8 @@ jobs:
             echo "### Setting \"INFRA_PROVIDER\" to \"$INFRA_PROVIDER\""
             yq -i ".scenario[0].kustomize.guideVariableOverrides.INFRA_PROVIDER = \"$INFRA_PROVIDER\"" ~/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml
             cat ~/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.INFRA_PROVIDER'
-            echo "### Setting \"acceleratorBackend\" to \"$LLMDBENCH_CICD_ACCELERATOR\$LLMDBENCH_CICD_BACKEND\""
-            yq -i ".scenario[0].kustomize.acceleratorBackend = \"$LLMDBENCH_CICD_ACCELERATOR\$LLMDBENCH_CICD_BACKEND\"" ~/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml
+            echo "### Setting \"acceleratorBackend\" to \"$LLMDBENCH_CICD_ACCELERATOR/$LLMDBENCH_CICD_BACKEND\""
+            yq -i ".scenario[0].kustomize.acceleratorBackend = \"$LLMDBENCH_CICD_ACCELERATOR/$LLMDBENCH_CICD_BACKEND\"" ~/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml
             cat ~/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.acceleratorBackend'
             echo " ### Setting priority class \"nightly-gpu-critical\" on scenario \"$LLMDBENCH_CICD_SCENARIO\""
             for i in vllm decode prefill; do
@@ -399,7 +399,7 @@ jobs:
             done
             export LLMDBENCH_CICD_DECODE_PODS="${{ inputs.decode_pods }}"
             if [[ $LLMDBENCH_CICD_DECODE_PODS != "auto" ]]; then
-              echo " ### Setting decode pods to \"$LLMDBENCH_CICD_DECODE_PODS" on scenario \"$LLMDBENCH_CICD_SCENARIO\""
+              echo "### Setting decode pods to \"$LLMDBENCH_CICD_DECODE_PODS\" on scenario \"$LLMDBENCH_CICD_SCENARIO\""
               for i in vllm decode; do
                 find ~/llm-d/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO/modelserver/ -type f -name "patch-$i.yaml" -exec yq ".spec.replicas=$LLMDBENCH_CICD_DECODE_PODS" -i {} \;
                 find ~/llm-d/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO/modelserver/ -type f -name "patch-$i.yaml" -exec yq ".spec.replicas" {} \;
@@ -407,7 +407,7 @@ jobs:
             fi
             export LLMDBENCH_CICD_PREFILL_PODS="${{ inputs.prefill_pods }}"
             if [[ $LLMDBENCH_CICD_PREFILL_PODS != "auto" ]]; then
-              echo " ### Setting decode pods to \"$LLMDBENCH_CICD_DECODE_PODS" on scenario \"$LLMDBENCH_CICD_SCENARIO\""
+              echo "### Setting decode pods to \"$LLMDBENCH_CICD_PREFILL_PODS\" on scenario \"$LLMDBENCH_CICD_SCENARIO\""
               for i in prefill; do
                 find ~/llm-d/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO/modelserver/ -type f -name "patch-$i.yaml" -exec yq ".spec.replicas=$LLMDBENCH_CICD_DECODE_PODS" -i {} \;
                 find ~/llm-d/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO/modelserver/ -type f -name "patch-$i.yaml" -exec yq ".spec.replicas" {} \;
