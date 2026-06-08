@@ -391,7 +391,8 @@ jobs:
             echo "ERROR: please define a default StorageClass on your cluster"
             exit 1
           fi
-          echo "Ensuring storageclass \"$IS_DEFAULT_SC\" can create a pvc with accessMode \"ReadWriteMany\"..."
+          DEFAULT_SC=$(kubectl get storageclass  | grep "(default)" | cut -d "(" -f 1)
+          echo "Ensuring storageclass \"$DEFAULT_SC\" can create a pvc with accessMode \"ReadWriteMany\"..."
           cat <<PVC_EOF > pvc.yaml
           apiVersion: v1
           kind: PersistentVolumeClaim
@@ -400,7 +401,7 @@ jobs:
           spec:
             accessModes:
               - ReadWriteMany
-            storageClassName: ibm-spectrum-scale-fileset
+            storageClassName: $DEFAULT_SC
             resources:
               requests:
                 storage: 1G
