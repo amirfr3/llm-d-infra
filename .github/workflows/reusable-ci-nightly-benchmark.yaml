@@ -108,6 +108,11 @@ on:
         required: false
         default: 'sanity_random.yaml'
         type: 'string'
+      cleanup:
+        description: 'Cleanup the llm-d stack stood up by this workflow'
+        required: false
+        default: 'true'
+        type: string
       tpu_topology:
         description: 'GKE TPU topology (e.g. 2x4, 2x2x1)'
         required: false
@@ -259,6 +264,7 @@ jobs:
       LLMDBENCH_CICD_BACKEND: ${{ inputs.backend_type || 'vllm' }}
       LLMDBENCH_CICD_INFRA_PROVIDER: ${{ inputs.infra_provider || '' }}
       LLMDBENCH_CICD_CONNECTOR: ${{ inputs.connector || '' }}
+      LLMDBENCH_CICD_CLEANUP: ${{ inputs.cleanup || 'true' }}
       LLMDBENCH_CICD_DATA_ACCESS_TIMEOUT: 1200
       LLMDBENCH_CICD_WAIT_TIMEOUT: 1200
       LLMDBENCH_CICD_JOB_TIMEOUT: 2700s
@@ -754,7 +760,7 @@ jobs:
         shell: bash
 
       - name: Teardown
-        if: always()
+        if: env.LLMDBENCH_CICD_CLEANUP == 'true'
         run: |
           cd ~/work/llm-d-benchmark/llm-d-benchmark/
           LLMDBENCH_CMD="llmdbenchmark --spec $LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO $LLMDBENCH_EXTRA_CMD teardown --namespace $LLMDBENCH_CICD_NS --gateway-class $LLMDBENCH_CICD_GATEWAY_CLASS --release $LLMDBENCH_CICD_R --methods $LLMDBENCH_CICD_METHOD"
