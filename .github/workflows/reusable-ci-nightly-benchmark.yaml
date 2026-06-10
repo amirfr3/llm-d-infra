@@ -591,7 +591,7 @@ jobs:
             git clone https://github.com/llm-d/llm-d.git
           else
             echo "### llm-d code is already present. Will then delete llm-d-benchmark"
-            pip uninstall llmdbenchmark || true
+            pip uninstall -y llmdbenchmark || true
             rm -rf ~/work/llm-d-benchmark/
           fi
           cd ~/work/llm-d/llm-d
