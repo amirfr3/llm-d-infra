@@ -664,6 +664,13 @@ jobs:
               eval $lkcmd
               cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.guideVariableOverrides.CONNECTOR'
             fi
+            if [[ ! -z $LLMDBENCH_CICD_OFFLOADING_TARGET ]]; then
+              echo "### Setting \"VARIANT\" to \"$LLMDBENCH_CICD_OFFLOADING_TARGET\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+              lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.VARIANT = \\\"$LLMDBENCH_CICD_OFFLOADING_TARGET\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
+              echo -n "; $lkcmd" >> ~/work/lkcmd.txt
+              eval $lkcmd
+              cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.guideVariableOverrides.VARIANT'
+            fi
             echo "### Setting \"guideName\" to \"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
             lkcmd="yq -i \".scenario[0].kustomize.guideName = \\\"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
@@ -679,12 +686,12 @@ jobs:
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
             cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.NAMESPACE'
-            export LLMDBENCH_CICD_BACKEND_ACCELERATOR=$(echo $LLMDBENCH_CICD_ACCELERATOR/$LLMDBENCH_CICD_BACKEND/$LLMDBENCH_CICD_CONNECTOR/$LLMDBENCH_CICD_OFFLOADING_TARGET | sed 's^//^/^g')
+            export LLMDBENCH_CICD_BACKEND_ACCELERATOR=$(echo $LLMDBENCH_CICD_ACCELERATOR/$LLMDBENCH_CICD_BACKEND | sed 's^//^/^g')
             echo "### Setting \"acceleratorBackend\" to \"$LLMDBENCH_CICD_BACKEND_ACCELERATOR\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
             lkcmd="yq -i \".scenario[0].kustomize.acceleratorBackend = \\\"$LLMDBENCH_CICD_BACKEND_ACCELERATOR\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
-            cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.acceleratorBackend'
+            cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.acceleratorBackend'          
           fi
           if [[ "${{ inputs.harness }}" == "nop" && "${{ inputs.scenario_dir }}" == "cicd"  ]]; then
             echo " ### Setting harness executable to \"llm-d-benchmark.py\" on scenario \"$LLMDBENCH_CICD_SCENARIO\""
