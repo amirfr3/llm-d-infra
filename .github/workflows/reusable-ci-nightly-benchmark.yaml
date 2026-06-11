@@ -641,53 +641,53 @@ jobs:
           touch ~/work/lkcmd.txt
           if [[ $LLMDBENCH_CICD_METHOD == "kustomize" ]]; then
             export LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME=$(echo $LLMDBENCH_CICD_SCENARIO/$LLMDBENCH_CICD_OFFLOADING_TARGET | sed 's#/$##')
-            export LLMDBENCH_CICD_GUIDE_FILE=$(echo $LLMDBENCH_CICD_SCENARIO | cut -d '/' -f 1)
-            echo "### Setting \"INFRA_PROVIDER\" to \"$LLMDBENCH_CICD_INFRA_PROVIDER\""
-            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.INFRA_PROVIDER = \\\"$LLMDBENCH_CICD_INFRA_PROVIDER\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml"
+            export LLMDBENCH_CICD_SCENARIO_GUIDE_FILE=~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml
+            echo "### Setting \"INFRA_PROVIDER\" to \"$LLMDBENCH_CICD_INFRA_PROVIDER\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.INFRA_PROVIDER = \\\"$LLMDBENCH_CICD_INFRA_PROVIDER\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "$lkcmd" > ~/work/lkcmd.txt
             eval $lkcmd
-            cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.INFRA_PROVIDER'
-            echo "### Setting \"REPO_ROOT\" to \"$HOME/work/llm-d/llm-d\""
-            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.REPO_ROOT = \\\"$HOME/work/llm-d/llm-d\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml"
+            cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.guideVariableOverrides.INFRA_PROVIDER'
+            echo "### Setting \"REPO_ROOT\" to \"$HOME/work/llm-d/llm-d\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.REPO_ROOT = \\\"$HOME/work/llm-d/llm-d\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
-            cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.REPO_ROOT'
-            echo "### Setting \"GUIDE_NAME\" to \"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\""
-            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.GUIDE_NAME = \\\"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml"
+            cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.guideVariableOverrides.REPO_ROOT'
+            echo "### Setting \"GUIDE_NAME\" to \"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.GUIDE_NAME = \\\"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
             cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.GUIDE_NAME'
             if [[ ! -z $LLMDBENCH_CICD_CONNECTOR ]]; then
-              echo "### Setting \"CONNECTOR\" to \"$LLMDBENCH_CICD_CONNECTOR\""
-              lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.CONNECTOR = \\\"$LLMDBENCH_CICD_CONNECTOR\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml"
+              echo "### Setting \"CONNECTOR\" to \"$LLMDBENCH_CICD_CONNECTOR\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+              lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.CONNECTOR = \\\"$LLMDBENCH_CICD_CONNECTOR\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
               echo -n "; $lkcmd" >> ~/work/lkcmd.txt
               eval $lkcmd
-              cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.CONNECTOR'
+              cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.guideVariableOverrides.CONNECTOR'
             fi
-            echo "### Setting \"guideName\" to \"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\""
-            lkcmd="yq -i \".scenario[0].kustomize.guideName = \\\"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml"
+            echo "### Setting \"guideName\" to \"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+            lkcmd="yq -i \".scenario[0].kustomize.guideName = \\\"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd            
-            echo "### Setting \"repoPath\" to \"$HOME/work/llm-d/llm-d\""
-            lkcmd="yq -i \".scenario[0].kustomize.repoPath = \\\"$HOME/work/llm-d/llm-d\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml"
+            echo "### Setting \"repoPath\" to \"$HOME/work/llm-d/llm-d\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+            lkcmd="yq -i \".scenario[0].kustomize.repoPath = \\\"$HOME/work/llm-d/llm-d\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
-            cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.repoPath'
-            echo "### Setting \"NAMESPACE\" to \"$LLMDBENCH_CICD_NS\""
-            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.NAMESPACE = \\\"$LLMDBENCH_CICD_NS\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml"
+            cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.repoPath'
+            echo "### Setting \"NAMESPACE\" to \"$LLMDBENCH_CICD_NS\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+            lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.NAMESPACE = \\\"$LLMDBENCH_CICD_NS\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
             cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.NAMESPACE'
             export LLMDBENCH_CICD_BACKEND_ACCELERATOR=$(echo $LLMDBENCH_CICD_ACCELERATOR/$LLMDBENCH_CICD_BACKEND | sed 's^//^/^g')
-            echo "### Setting \"acceleratorBackend\" to \"$LLMDBENCH_CICD_BACKEND_ACCELERATOR\""
-            lkcmd="yq -i \".scenario[0].kustomize.acceleratorBackend = \\\"$LLMDBENCH_CICD_BACKEND_ACCELERATOR\\\"\" ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml"
+            echo "### Setting \"acceleratorBackend\" to \"$LLMDBENCH_CICD_BACKEND_ACCELERATOR\" in \"$LLMDBENCH_CICD_SCENARIO_GUIDE_FILE\""
+            lkcmd="yq -i \".scenario[0].kustomize.acceleratorBackend = \\\"$LLMDBENCH_CICD_BACKEND_ACCELERATOR\\\"\" $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
-            cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.acceleratorBackend'
+            cat $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE | yq '.scenario[0].kustomize.acceleratorBackend'
           fi
           if [[ "${{ inputs.harness }}" == "nop" && "${{ inputs.scenario_dir }}" == "cicd"  ]]; then
             echo " ### Setting harness executable to \"llm-d-benchmark.py\" on scenario \"$LLMDBENCH_CICD_SCENARIO\""
-            yq -i '.scenario[0].harness.executable = "llm-d-benchmark.py"' ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_GUIDE_FILE.yaml
+            yq -i '.scenario[0].harness.executable = "llm-d-benchmark.py"' $LLMDBENCH_CICD_SCENARIO_GUIDE_FILE
           fi
         shell: bash
 
