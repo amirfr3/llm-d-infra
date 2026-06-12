@@ -723,8 +723,15 @@ jobs:
         run: |
           if [[ $LLMDBENCH_CICD_METHOD == "kustomize" ]]; then
             LLMDBENCH_CICD_KUSTOMIZE_PATH=~/work/llm-d/llm-d/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO/modelserver/$LLMDBENCH_CICD_ACCELERATOR/$LLMDBENCH_CICD_BACKEND/$LLMDBENCH_CICD_CONNECTOR/$LLMDBENCH_CICD_OFFLOADING_TARGET/$LLMDBENCH_CICD_INFRA_PROVIDER
-            echo "Kustomize full path is \"$LLMDBENCH_CICD_KUSTOMIZE_PATH\""
-            detected_model=$(kubectl kustomize $LLMDBENCH_CICD_KUSTOMIZE_PATH | yq .spec.template.spec.containers[0].args | grep -Ev "\- \--|\- '|\---|\- \||    \--|.*exec vllm|'|null" | uniq | sed -e 's^ ^^g' -e 's|^-||g' -e 's^\\^^g')
+            echo "Kustomize full path is \"$LLMDBENCH_CICD_KUSTOMIZE_PATH\". Will now attempt to detect model name..."
+            detected_model=$(kubectl kustomize $LLMDBENCH_CICD_KUSTOMIZE_PATH | yq .spec.template.spec.containers[0].args | grep -Ev "\- \--|\- '|\---|\- \||    \--|.*exec vllm|'|null|#|\"|find|START_RANK" | sed -e 's^ ^^g' -e 's|^-||g' -e 's^\\^^g' -e '/^$/d' | uniq || true)
+            if [[ -z $detected_model ]]; then
+              detected_model=$(kubectl kustomize $LLMDBENCH_CICD_KUSTOMIZE_PATH |  yq .spec.leaderWorkerTemplate.workerTemplate.spec.containers[0].args | grep -Ev "\- \--|\- '|\---|\- \||    \--|.*exec vllm|'|null|#|\"|find|START_RANK" | sed -e 's^ ^^g' -e 's|^-||g' -e 's^\\^^g' -e '/^$/d' | uniq || true)
+            fi
+            if [[ -z $detected_model ]]; then
+              echo "### ERROR: unable to detect model"
+              exit 1
+            fi
             echo "### LLMDBENCH_CICD_DETECTED_MODEL is \"$detected_model\""
             echo "LLMDBENCH_CICD_DETECTED_MODEL=$detected_model"  >> $GITHUB_ENV
             if [[ $LLMDBENCH_CICD_SCENARIO == "predicted-latency-routing" || $LLMDBENCH_CICD_SCENARIO == "flow-control" ]]; then
