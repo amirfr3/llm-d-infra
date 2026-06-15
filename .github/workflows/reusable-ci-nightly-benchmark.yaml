@@ -47,7 +47,7 @@ on:
         description: 'Which component should be used to hous offloaded blocks ("cpu","memory", default is "")'
         required: false
         type: 'string'
-        default: ''        
+        default: ''
       connector:
         description: 'Accelerator offloading connector (ONLY VALID FOR "kustomize" standyp method)'
         required: false
@@ -158,11 +158,11 @@ on:
         required: false
         type: 'string'
         default: '2700s'
-      kustomize_standup_timeout:
-        description: 'Timeout in seconds for kustomize standup deploy'
+      standup_timeout:
+        description: 'Timeout in seconds for standup of a new llm-d stack'
         required: false
         type: 'string'
-        default: '1200'
+        default: '2400'
 
 #  push:
 #    branches:
@@ -298,7 +298,9 @@ jobs:
       LLMDBENCH_CICD_CLEANUP: ${{ inputs.cleanup || 'true' }}
       LLMDBENCH_CICD_DATA_ACCESS_TIMEOUT: ${{ inputs.data_access_timeout || '1200' }}
       LLMDBENCH_CICD_JOB_TIMEOUT: ${{ inputs.job_timeout || '2700s' }}
-      LLMDBENCH_CICD_KUSTOMIZE_STANDUP_TIMEOUT: ${{ inputs.kustomize_standup_timeout || '1200' }}
+      LLMDBENCH_CICD_KUSTOMIZE_STANDUP_TIMEOUT: ${{ inputs.standup_timeout || '2400' }}
+      LLMDBENCH_CICD_MODELSERVICE_STANDUP_TIMEOUT: ${{ inputs.standup_timeout || '2400' }}
+      LLMDBENCH_CICD_STANDALONE_STANDUP_TIMEOUT: ${{ inputs.standup_timeout || '2400' }}
       LLMDBENCH_CICD_RUN_WAIT_TIMEOUT: ${{ inputs.wait_timeout || '3600' }}
       LLMDBENCH_CICD_RUN_PVC_BIND_TIMEOUT: ${{ inputs.pvc_bind_timeout || '1200' }}
       LLMDBENCH_CICD_DECODE_PODS: ${{ inputs.decode_pods || 'auto' }}
@@ -639,7 +641,7 @@ jobs:
       - name: Apply overrides to llm-d-benchmark scenarios (yaml)
         run: |
           touch ~/work/lkcmd.txt
-          export LLMDBENCH_CICD_SCENARIO_FILE=~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml          
+          export LLMDBENCH_CICD_SCENARIO_FILE=~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml
           if [[ $LLMDBENCH_CICD_METHOD == "kustomize" ]]; then
             export LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME=$(echo $LLMDBENCH_CICD_SCENARIO | sed 's#/$##')
             echo "### Setting \"INFRA_PROVIDER\" to \"$LLMDBENCH_CICD_INFRA_PROVIDER\" in \"$LLMDBENCH_CICD_SCENARIO_FILE\""
@@ -675,7 +677,7 @@ jobs:
             lkcmd="yq -i \".scenario[0].kustomize.guideName = \\\"$LLMDBENCH_CICD_EFFECTIVE_GUIDE_NAME\\\"\" $LLMDBENCH_CICD_SCENARIO_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
-            cat $LLMDBENCH_CICD_SCENARIO_FILE | yq '.scenario[0].kustomize.guideName'            
+            cat $LLMDBENCH_CICD_SCENARIO_FILE | yq '.scenario[0].kustomize.guideName'
             echo "### Setting \"repoPath\" to \"$HOME/work/llm-d/llm-d\" in \"$LLMDBENCH_CICD_SCENARIO_FILE\""
             lkcmd="yq -i \".scenario[0].kustomize.repoPath = \\\"$HOME/work/llm-d/llm-d\\\"\" $LLMDBENCH_CICD_SCENARIO_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
@@ -691,7 +693,7 @@ jobs:
             lkcmd="yq -i \".scenario[0].kustomize.acceleratorBackend = \\\"$LLMDBENCH_CICD_BACKEND_ACCELERATOR\\\"\" $LLMDBENCH_CICD_SCENARIO_FILE"
             echo -n "; $lkcmd" >> ~/work/lkcmd.txt
             eval $lkcmd
-            cat $LLMDBENCH_CICD_SCENARIO_FILE | yq '.scenario[0].kustomize.acceleratorBackend'          
+            cat $LLMDBENCH_CICD_SCENARIO_FILE | yq '.scenario[0].kustomize.acceleratorBackend'
           fi
           if [[ "${{ inputs.harness }}" == "nop" && "${{ inputs.scenario_dir }}" == "cicd"  ]]; then
             echo " ### Setting harness executable to \"llm-d-benchmark.py\" in \"$LLMDBENCH_CICD_SCENARIO_FILE\""
@@ -778,7 +780,7 @@ jobs:
             export LLMDBENCH_EXTRA_CMD="--verbose $LLMDBENCH_EXTRA_CMD "
           fi
           if [[ $LLMDBENCH_CICD_METHOD == "kustomize" ]]; then
-            export LLMDBENCH_EXTRA_STANDUP_OPERATION_CMD="--kustomize-deploy-timeout $LLMDBENCH_CICD_KUSTOMIZE_STANDUP_TIMEOUT $LLMDBENCH_EXTRA_STANDUP_OPERATION_CMD "
+            export LLMDBENCH_EXTRA_STANDUP_OPERATION_CMD="--kustomize-deploy-timeout $LLMDBENCH_CICD_KUSTOMIZE_STANDUP_TIMEOUT --modelservice-deploy-timeout $LLMDBENCH_CICD_MODELSERVICE_STANDUP_TIMEOUT --standalone-deploy-timeout $LLMDBENCH_CICD_STANDALONE_STANDUP_TIMEOUT $LLMDBENCH_EXTRA_STANDUP_OPERATION_CMD "
           fi
           export LLMDBENCH_EXTRA_RUN_OPERATION_CMD="--wait-timeout $LLMDBENCH_CICD_RUN_WAIT_TIMEOUT --pvc-bind-timeout $LLMDBENCH_CICD_RUN_PVC_BIND_TIMEOUT --data-access-timeout $LLMDBENCH_CICD_DATA_ACCESS_TIMEOUT $LLMDBENCH_EXTRA_RUN_OPERATION_CMD "
           if [[ ! -z $LLMDBENCH_CICD_DETECTED_MODEL ]]; then
