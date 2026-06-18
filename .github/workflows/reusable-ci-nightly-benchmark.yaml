@@ -439,7 +439,7 @@ jobs:
         shell: bash
 
       - name: Show cluster annotations, labels and resources
-        if: env.LLMDBENCH_IS_VERBOSE == 'tru'
+        if: env.LLMDBENCH_IS_VERBOSE == 'true'
         id: infra_show_cluster_nodes_deep
         run: |
           echo "### Attempting to show node annotations..."
