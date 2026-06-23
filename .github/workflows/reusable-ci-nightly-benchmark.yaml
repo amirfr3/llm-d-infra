@@ -749,6 +749,18 @@ jobs:
           eval $lkcmd
           cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.ROUTER_CHART_VERSION'
           #
+          echo "### Setting \"ACCELERATOR\" to \"$LLMDBENCH_CICD_ACCELERATOR\" in \"$LLMDBENCH_CICD_SCENARIO_FILE\""
+          lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.ACCELERATOR = \\\"$LLMDBENCH_CICD_ACCELERATOR\\\"\" $LLMDBENCH_CICD_SCENARIO_FILE"
+          echo -n "; $lkcmd" >> ~/work/lkcmd.txt
+          eval $lkcmd
+          cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.ACCELERATOR'
+          #
+          echo "### Setting \"BACKEND\" to \"$LLMDBENCH_CICD_BACKEND\" in \"$LLMDBENCH_CICD_SCENARIO_FILE\""
+          lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.BACKEND = \\\"$LLMDBENCH_CICD_BACKEND\\\"\" $LLMDBENCH_CICD_SCENARIO_FILE"
+          echo -n "; $lkcmd" >> ~/work/lkcmd.txt
+          eval $lkcmd
+          cat ~/work/llm-d-benchmark/llm-d-benchmark/config/scenarios/$LLMDBENCH_CICD_SCENARIO_DIR/$LLMDBENCH_CICD_SCENARIO.yaml | yq '.scenario[0].kustomize.guideVariableOverrides.BACKEND'
+          #
           if [[ ! -z $LLMDBENCH_CICD_CONNECTOR ]]; then
             echo "### Setting \"CONNECTOR\" to \"$LLMDBENCH_CICD_CONNECTOR\" in \"$LLMDBENCH_CICD_SCENARIO_FILE\""
             lkcmd="yq -i \".scenario[0].kustomize.guideVariableOverrides.CONNECTOR = \\\"$LLMDBENCH_CICD_CONNECTOR\\\"\" $LLMDBENCH_CICD_SCENARIO_FILE"
