@@ -144,7 +144,7 @@ on:
       validate_script:
         description: |
           Path to a validation script relative to the llm-d repo root. 
-          ci environment variables are available to it.
+          inherits the full job environment.
         required: false
         type: 'string'
         default: ''
@@ -976,11 +976,13 @@ jobs:
       - name: Run post-run validation script
         id: benchmark_validate
         if: |
-          inputs.validate_script != '' &&
-          steps.benchmark_run.outcome == 'success' &&
-          inputs.dry_run != 'true'
+          inputs.validate_script != ''
         timeout-minutes: 10
         run: |
+          if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+            echo "Skipping validation script, due to \"dry-run\" mode activated"
+            exit 0
+          fi
           VALIDATION_SCRIPT="$HOME/work/llm-d/llm-d/${{ inputs.validate_script }}"
           if [[ ! -f "$VALIDATION_SCRIPT" ]]; then
             echo "::error::validate_script='${{ inputs.validate_script }}' set but $VALIDATION_SCRIPT does not exist"
