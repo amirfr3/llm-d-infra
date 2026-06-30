@@ -973,7 +973,7 @@ jobs:
           fi
         shell: bash
 
-      - name: Run validation script
+      - name: Run post-run validation script
         id: benchmark_validate
         if: |
           inputs.validate_script != '' &&
