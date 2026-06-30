@@ -981,7 +981,7 @@ jobs:
           inputs.dry_run != 'true'
         timeout-minutes: 10
         run: |
-          VALIDATION_SCRIPT="~/work/llm-d/llm-d/${{ inputs.validate_script }}"
+          VALIDATION_SCRIPT="$HOME/work/llm-d/llm-d/${{ inputs.validate_script }}"
           if [[ ! -f "$VALIDATION_SCRIPT" ]]; then
             echo "::error::validate_script='${{ inputs.validate_script }}' set but $VALIDATION_SCRIPT does not exist"
             exit 1
