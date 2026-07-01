@@ -141,9 +141,9 @@ on:
         required: false
         default: 'sanity_random.yaml'
         type: 'string'
-      validate_script:
+      verification_script:
         description: |
-          Path to a validation script relative to the llm-d repo root. 
+          Path to a verification script relative to the llm-d repo root.
           inherits the full job environment.
         required: false
         type: 'string'
@@ -200,7 +200,7 @@ on:
         default: '2400'
     outputs:
       failure_category:
-        description: 'Category of the first failed step (prepare, prereqs, infra, guide, benchmark, validate)'
+        description: 'Category of the first failed step (prepare, prereqs, infra, guide, benchmark, verify)'
         value: ${{ jobs.benchmark.outputs.failure_category }}
 
 #  push:
@@ -973,23 +973,23 @@ jobs:
           fi
         shell: bash
 
-      - name: Run post-run validation script
-        id: benchmark_validate
+      - name: Run post-run verification script
+        id: benchmark_verify
         if: |
-          inputs.validate_script != ''
+          inputs.verification_script != ''
         timeout-minutes: 10
         run: |
           if [[ "${{ inputs.dry_run }}" == "true" ]]; then
-            echo "Skipping validation script, due to \"dry-run\" mode activated"
+            echo "Skipping verification script, due to \"dry-run\" mode activated"
             exit 0
           fi
-          VALIDATION_SCRIPT="$HOME/work/llm-d/llm-d/${{ inputs.validate_script }}"
-          if [[ ! -f "$VALIDATION_SCRIPT" ]]; then
-            echo "::error::validate_script='${{ inputs.validate_script }}' set but $VALIDATION_SCRIPT does not exist"
+          VERIFICATION_SCRIPT="$HOME/work/llm-d/llm-d/${{ inputs.verification_script }}"
+          if [[ ! -f "$VERIFICATION_SCRIPT" ]]; then
+            echo "::error::verification_script='${{ inputs.verification_script }}' set but $VERIFICATION_SCRIPT does not exist"
             exit 1
           fi
-          echo "Running post-run validation: $VALIDATION_SCRIPT"
-          "$VALIDATION_SCRIPT"
+          echo "Running post-run verification: $VERIFICATION_SCRIPT"
+          "$VERIFICATION_SCRIPT"
         shell: bash
 
       - name: Teardown
@@ -1073,8 +1073,8 @@ jobs:
           CATEGORY=""
           if [ "${{ steps.benchmark_run.outcome }}" = "failure" ]; then
             CATEGORY="benchmark"
-          elif [ "${{ steps.benchmark_validate.outcome }}" = "failure" ]; then
-            CATEGORY="validate"
+          elif [ "${{ steps.benchmark_verify.outcome }}" = "failure" ]; then
+            CATEGORY="verify"
           elif [ "${{ steps.guide_standup.outcome }}" = "failure" ] || \
                [ "${{ steps.guide_teardown.outcome }}" = "failure" ] || \
                [ "${{ steps.guide_teardown_again.outcome }}" = "failure" ]; then
